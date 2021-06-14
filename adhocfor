@@ -1,0 +1,6 @@
+#!/bin/bash
+inv=/home/automation/plays/inventory
+privkey=/root/.ssh/id_rsa
+for i in proxy webservers database;do sudo -i ansible $i -i $inv -m user -a "user=automation uid=1001 state=present" -u root  --private-key=$privkey
+sudo -i ansible $i -i $inv -m authorized_key -a "user=automation key='{{ lookup('file', '/home/automation/.ssh/id_rsa.pub') }}' state=present" -u root  --private-key=$privkey
+sudo -i ansible $i -i $inv -m copy -a "content='automation ALL=(ALL) NOPASSWD: ALL' dest=/etc/sudoers.d/automation" -u root  --private-key=$privkey;done
