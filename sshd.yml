@@ -1,0 +1,9 @@
+---
+- name: "configure all ssh_config files."
+  hosts: all
+  become: true
+  tasks:
+    - name: "Updating ssh_config files options."
+      template:
+        src: templates/sshd_config.j2
+        dest: /etc/ssh/sshd_config  
