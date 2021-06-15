@@ -1,0 +1,21 @@
+---
+- hosts: proxy
+  become: true
+  tasks:
+    - name: "ensure cronie is install"
+      yum:
+        name: cronie
+        state: present
+    - name: "ensure the service is started"
+      systemd:
+        name: crond
+        state: started
+        enabled: yes
+
+    - name: "set cron configs for proxy server"
+      cron:
+        name: "run date append time"
+        user: root
+        hour: "1"
+        job: "date >> /var/log/time.log "
+        cron_file: ansible_date_rhce8
