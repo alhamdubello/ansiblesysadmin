@@ -1,0 +1,71 @@
+---
+- name: "create users on webservers."
+  hosts: all
+  become: true
+  vars_files:
+    - secret.yml
+    - vars/user_list.yml
+  tasks:
+    - name: "create users on webservers."        
+      user:
+        name: "{{ item.username }}"
+        password: "{{ user_password | password_hash('sha512') }}"
+        uid: "{{ item.uid }}"
+        shell: /bin/bash 
+        state: present
+      when: item.uid is regex('^1') and inventory_hostname in groups['webservers']
+      with_items:
+        - "{{ users }}"
+
+    - name: "upload ssh-keys to webservers"        
+      authorized_key:
+        user: "{{ item.username }}"
+        key: "{{ lookup('file', '/home/automation/.ssh/id_rsa.pub') }}"
+        state: present
+      when: item.uid is regex('^1') and inventory_hostname in groups['webservers']
+      with_items:
+        - "{{ users }}"
+
+    - name: "wheel group"
+      group:
+        name: wheel
+        state: present
+
+    - name: "add all users to wheel group."
+      user:
+        name: "{{ item.username }}"
+        groups: wheel
+        append: yes
+      when: item.uid is regex('^1') and inventory_hostname in groups['webservers']
+      with_items:
+        - "{{ users }}" 
+
+    - name: "users on database"
+      user:
+        name: "{{ item.username }}"
+        password: "{{ user_password | password_hash('sha512') }}"
+        uid: "{{ item.uid }}"
+        shell: /bin/bash 
+        state: present
+      when: item.uid is regex('^2') and inventory_hostname in groups['database']
+      with_items:
+        - "{{ users }}"
+
+
+    - name: "upload ssh-keys to database"        
+      authorized_key:
+        user: "{{ item.username }}"
+        key: "{{ lookup('file', '/home/automation/.ssh/id_rsa.pub') }}"
+        state: present
+      when: item.uid is regex('^2') and inventory_hostname in groups['database']
+      with_items:
+        - "{{ users }}"
+
+    - name: "add all users to wheel group."
+      user:
+        name: "{{ item.username }}"
+        groups: wheel
+        append: yes
+      when: item.uid is regex('^2') and inventory_hostname in groups['database']
+      with_items:
+        - "{{ users }}" 

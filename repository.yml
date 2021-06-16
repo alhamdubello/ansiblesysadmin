@@ -7,6 +7,6 @@
         name: mysql80-community
         description: "MySQL 8.0 YUM Repo"
         file: mysql80-community
-        baseurl: http://repo.mysql.com/RPM-GPG-KEY-mysql
+        baseurl: http://repo.mysql.com/yum/mysql-8.0-community/el/8/x86_64/
         enabled: yes
         gpgcheck: yes
