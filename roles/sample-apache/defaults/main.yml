@@ -1,0 +1,9 @@
+---
+# defaults file for sample-apache
+apache_packages:
+        - httpd
+        - mod_ssl
+        - php
+http_https_ports:
+        - 80/tcp
+        - 443/tcp

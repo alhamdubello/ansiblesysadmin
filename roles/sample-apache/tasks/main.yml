@@ -1,0 +1,27 @@
+---
+# tasks file for sample-apache
+- name: "Installing apache packages"
+  dnf:
+    name: "{{ apache_packages }}"
+    state: present
+
+- name: "ensure firewalld is running."
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: "open http and https ports are open."
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  with_items:
+    - "{{ http_https_ports }}"
+
+- name: "Template for /var/www/html/index.html"
+  template:
+    src: templates/index.html.j2
+    dest: /var/www/html/index.html
+  notify: restart apache
