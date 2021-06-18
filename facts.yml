@@ -1,0 +1,24 @@
+---
+- hosts: database
+  become: true
+  tasks:
+    - name: "create /etc/ansible/facts.d/"
+      file:
+        path: /etc/ansible/facts.d
+        state: directory
+        owner: root
+        group: root
+    
+    - name: "create /etc/ansible/facts.d/database.fact"
+      file:
+        path: /etc/ansible/facts.d/database.fact
+        state: touch
+        owner: root
+        group: root
+
+    - name: "adding content to /etc/ansible/facts.d/database.fact"
+      blockinfile:
+        path: /etc/ansible/facts.d/database.fact
+        block: |
+             [database]
+             server_role=mysql
